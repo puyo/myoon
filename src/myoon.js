@@ -15,50 +15,87 @@ const V3 = {
   mult: (x, y, z) => [x[0] * y[0], x[1] * y[1], z[0] * z[1]]
 };
 
+class Phase {
+  constructor(game) {
+    this.game = game;
+  }
+
+  static new(name, game) {
+    let cls = {
+      create: CreatePhase,
+      orders: OrdersPhase,
+      move: MovePhase
+    }[name];
+    return new cls(game);
+  }
+}
+
+class CreatePhase extends Phase {
+  update() {
+  }
+}
+
+class OrdersPhase extends Phase {
+  constructor(game) {
+    super(game);
+    this.orders = [];
+  }
+
+  update() {
+    if (!this.isFinished()) {
+      this.game.processOrders(this.orders);
+      this.game.setPhase('move');
+    }
+  }
+
+  isFinished() {
+    return this.orders.length < this.game.players.length;
+  }
+}
+
+class MovePhase extends Phase {
+  update() {
+    this.game.projectiles.forEach(b => b.update());
+    this.game.checkCollisions();
+    if (this.game.finishedMoving()) {
+      this.game.setPhase('orders');
+    }
+  }
+
+  isFinished() {
+  }
+}
+
 class Game {
+
   constructor() {
     this.moon = null;
     this.initPhases();
-    this.players = new Map();
+    this.players = [];
+  }
+
+  get projectiles() {
+    return this.players.map(x => x.projectiles).reduce((x, y) => x.concat(y));
+  }
+
+  get bombs() {
+    return this.players.map(x => x.bombs).reduce((x, y) => x.concat(y));
+  }
+
+  get orders() {
+    return this.players.map(x => x.order).filter(x => x !== undefined);
   }
 
   initPhases() {
-    this.phases = {
-      create: {
-        update(game) {
-        }
-      },
-      orders: {
-        update(game) {
-          if (game.areAllOrdersCollected()) {
-            game.processOrders();
-            game.setPhase('move');
-          }
-        }
-      },
-      move: {
-        update(game) {
-          game.projectiles.forEach(b => b.update());
-          game.checkCollisions();
-          if (game.finishedMoving()) {
-            game.startOrdersPhase();
-          }
-        }
-      },
-    };
     this.setPhase('create');
   }
 
   setPhase(phaseName) {
-    this.phase = this.phases[phaseName];
-  }
-
-  get projectiles() {
-    return [];
+    this.phase = new Phase.new(phaseName, this);
   }
 
   initDemo() {
-    this.moon = this.createMoon({width: 100, height: 100});
+    this.createMoon({width: 100, height: 100});
     this.createPlayer({name: 'P1', color: [127, 200, 255]});
     this.createPlayer({name: 'P2', color: [255, 64, 0]});
   }
@@ -83,22 +120,23 @@ class Game {
     console.log('projectile collided with map');
   }
 
-  finishedMoving() {
-    return true;
+  processOrders(orders) {
+    orders.forEach(o => o.process());
   }
 
   createMoon(opts) {
     this.moon = new Moon(opts);
+    return this.moon;
   }
 
   createPlayer(opts) {
     let player = new Player(opts);
-    this.players.set(opts.name, player);
+    this.players.push(player);
     return player;
   }
 
   update() {
-    this.phase.update();
+    this.phase.update(this);
   }
 }
 
@@ -166,7 +204,10 @@ class Player {
     this.color = color;
     this.energy = initialEnergy || Config.energy.initial;
     this.baseEnergyPerTurn = baseEnergyPerTurn || Config.energy.perTurn;
+    this.projectiles = [];
   }
+
+  get bombs() { return this.projectiles.filter(x => x.constructor === Bomb); }
 }
 
 export { Game };
