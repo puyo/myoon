@@ -154,8 +154,8 @@ class Moon {
 class Projectile {
 
   constructor({velocity, position}) {
-    this.velocity = velocity || V3.null();
-    this.position = position || V3.null();
+    this.velocity = velocity;
+    this.position = position;
   }
 
   update() {
@@ -170,7 +170,12 @@ class Projectile {
 
 class Bomb extends Projectile {}
 
-class Building {}
+class Building {
+  constructor({position}) {
+    this.position = position;
+  }
+}
+
 class Hub extends Building {}
 
 class Order {
@@ -205,9 +210,11 @@ class Player {
     this.energy = initialEnergy || Config.energy.initial;
     this.baseEnergyPerTurn = baseEnergyPerTurn || Config.energy.perTurn;
     this.projectiles = [];
+    this.buildings = [];
   }
 
   get bombs() { return this.projectiles.filter(x => x.constructor === Bomb); }
+  get hubs() { return this.buildings.filter(x => x.constructor === Hub); }
 }
 
 export { Game };

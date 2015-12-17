@@ -3,13 +3,22 @@
   "version": "1.0.0",
   "description": "Moonbase commander like game",
   "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack",
     "test": "babel-node test/*.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.3.17",
+    "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.3.13",
-    "tape": "^4.2.2"
+    "tape": "^4.2.2",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  },
+  "dependencies": {
+    "three": "^0.73.0",
+    "three-orbit-controls": "^72.0.0"
   }
 }

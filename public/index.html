@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Myoon</title>
+    <style>
+      html, body { margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body>
+    <script src="http://code.jquery.com/jquery-1.11.3.js"></script>
+    <script src="public/bundle.js"></script>
+    <script>
+// $(document).on('keypress', function(e){
+//     app.sphere.rotation.x += 10;
+// 
+//     app.renderer.render( app.scene, app.camera );
+// });
+
+$(document).on('mousemove', function(e){
+  if (app.sphere) {
+    var ry = Math.PI * e.clientX*2 / window.outerWidth;
+    var rx = Math.PI * (e.clientY - window.outerHeight/2) / window.outerHeight;
+    app.sphere.rotation.x = rx;
+    app.sphere.rotation.y = ry;
+  }
+});
+    </script>
+
+  </body>
+</html>
