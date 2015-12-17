@@ -7,11 +7,15 @@ let app = app || {};
 
 app.textureLoader = new THREE.TextureLoader();
 
-app.heightMapPath = "earthcloudmaptrans.jpg";
+app.heightMapPath = "earthbump1k.jpg";
+app.mapPath = "earthmap1k.jpg";
+app.specularMapPath = "earthspec1k.jpg";
+
+//app.heightMapPath = "earthcloudmaptrans.jpg";
+
 //app.heightMapPath = "taytay-bump.jpg";
 //app.mapPath = "taytay.jpg";
-//app.specularMapPath = "earthspec1k.jpg";
-//
+
 app.mapPath = app.mapPath || app.heightMapPath;
 
 app.init = function () {
@@ -101,12 +105,12 @@ app.morphSphere = function() {
       // asin / PI range is -0.5 to +0.5
       // v range is 0 to 1
       v = 0.5 - (Math.asin(n.y) / Math.PI);
-      scalar = 3;
+      scalar = 10;
       h = scalar * getColor(
           Math.floor(u * img.width),
           Math.floor(v * img.height),
           pix) / 256;
-      addHeight(vertex, h - 1); // account for water
+      addHeight(vertex, h - 0.01); // account for water
     }
     geom.verticesNeedUpdate = true;
 
@@ -116,14 +120,12 @@ app.morphSphere = function() {
 
 app.addSphere = function() {
   var radius = 75;
-  var detail = 7;
+  var detail = 6;
   var sphereGeom = THREE.IcosahedronGeometry;
   var geometry = new sphereGeom(radius, detail);
 
   var material = new THREE.MeshPhongMaterial({
-    color: 0x804020,
     shininess: 30,
-    //emissive: 0x202020,
     map: app.textureLoader.load(app.mapPath),
   });
   if (app.specularMapPath) {
