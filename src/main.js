@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import THREE from 'three';
 import threeOrbitControls from 'three-orbit-controls';
 
@@ -8,8 +9,8 @@ let app = app || {};
 app.textureLoader = new THREE.TextureLoader();
 
 app.heightMapPath = "earthbump1k.jpg";
-app.mapPath = "earthmap1k.jpg";
-app.specularMapPath = "earthspec1k.jpg";
+app.mapPath = "earth2k.jpg";
+//app.specularMapPath = "earthspec1k.jpg";
 
 //app.heightMapPath = "earthcloudmaptrans.jpg";
 
@@ -105,7 +106,7 @@ app.morphSphere = function() {
       // asin / PI range is -0.5 to +0.5
       // v range is 0 to 1
       v = 0.5 - (Math.asin(n.y) / Math.PI);
-      scalar = 10;
+      scalar = 5;
       h = scalar * getColor(
           Math.floor(u * img.width),
           Math.floor(v * img.height),
@@ -125,24 +126,25 @@ app.addSphere = function() {
   var geometry = new sphereGeom(radius, detail);
 
   var material = new THREE.MeshPhongMaterial({
-    shininess: 30,
     map: app.textureLoader.load(app.mapPath),
   });
-  if (app.specularMapPath) {
-    material.specularMap = app.textureLoader.load(app.specularMapPath);
-    material.specular = new THREE.Color('grey')
-  }
   app.sphere = new THREE.Mesh(geometry, material);
 
   var waterGeom = new sphereGeom(radius, detail);
   var waterTex = new THREE.ImageUtils.loadTexture('water512.jpg');
   waterTex.wrapS = waterTex.wrapT = THREE.RepeatWrapping;
-  waterTex.repeat.set(5,5);
-  var waterMat = new THREE.MeshBasicMaterial( {
+  waterTex.repeat.set(10, 10);
+  var waterMat = new THREE.MeshPhongMaterial( {
     map: waterTex,
     transparent: true,
-    opacity: 0.80
+    opacity: 0.10,
+    shininess: 80
   } );
+  if (app.specularMapPath) {
+    //waterMat.specularMap = app.textureLoader.load(app.specularMapPath);
+    waterMat.shininess = 30;
+    waterMat.specular = new THREE.Color('grey');
+  }
   app.water = new THREE.Mesh(waterGeom, waterMat);
   app.sphere.add(app.water);
 
@@ -175,5 +177,6 @@ app.animate = function () {
 };
 requestAnimationFrame( app.animate );
 
+window.$ = $;
 window.app = app;
 window.onload = app.init;

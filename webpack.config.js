@@ -5,19 +5,15 @@ module.exports = {
   devtool: 'eval',
 
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080',    //path to js files (client)
-    'webpack/hot/only-dev-server',                        //path to js files (server) with our plugin it ll send pieces of changed code
     './src/main.js'
   ],
 
   output: {
-    path: path.resolve('build'),    //the name of folder where bundle.js ll live
-    filename: 'bundle.js',
-    publicPath: 'public'
+    path: path.resolve('public'),    //the name of folder where bundle.js will live
+    filename: 'bundle.js'
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
   ],
 
   resolve: {
